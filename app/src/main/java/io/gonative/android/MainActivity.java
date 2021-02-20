@@ -1,6 +1,7 @@
 package io.gonative.android;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -18,6 +19,7 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,9 +36,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+
+import android.provider.Settings;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -67,11 +72,18 @@ import com.squareup.seismic.ShakeDetector;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -167,6 +179,126 @@ public class MainActivity extends AppCompatActivity implements Observer,
     private String connectivityOnceCallback;
     private PhoneStateListener phoneStateListener;
     private SignalStrength latestSignalStrength;
+
+
+
+
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
+
+    public static String PREFFERED_THEME = "AppTheme";
+
+    AsyncTask<Void, Void, Void> mTask; // define this at the class level
+
+    private void setLightTheme() {
+        overridePendingTransition(0, 0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int flags = getWindow().getDecorView().getSystemUiVisibility(); // get current flag
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;   // add LIGHT_STATUS_BAR to flag
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+            getWindow().setStatusBarColor(Color.parseColor("#fafafa")); // optional
+        }
+    }
+
+    private void setDarkTheme() {
+        overridePendingTransition(0, 0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int flags = getWindow().getDecorView().getSystemUiVisibility(); // get current flag
+            flags = flags & ~ View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR; // use XOR here for remove LIGHT_STATUS_BAR from flags
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+            getWindow().setStatusBarColor(Color.parseColor("#333333")); // optional
+
+        }
+    }
+
+    private void changetheme() {
+
+        if (PREFFERED_THEME.equals("AppTheme")){
+            setLightTheme();
+        } else {
+            setDarkTheme();
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            getWindow().setStatusBarColor(Color.BLACK);
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void checkuserinfo() {
+        mTask = new AsyncTask<Void, Void, Void>() {
+
+            String USER_HASH_ADS = getCookie("postearly.com", "nplh");
+            String url_ads = "https://" + "postearly.com" + "/getuserinfofromcookie/" + (USER_HASH_ADS);
+            String PackageId = "";
+            String UserTheme = "0";
+            JSONObject json;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    json = readJsonFromUrl(url_ads);
+
+                } catch (Exception e) {
+//                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+
+                super.onPostExecute(result);
+
+                try {
+
+                    PackageId = json.get("package_id").toString();
+                    UserTheme = json.getJSONObject("preferences").get("dark_mode_status").toString();
+
+                    String prevThemeConfig = PREFFERED_THEME;
+
+                    if (UserTheme.equals("0")) {
+                        PREFFERED_THEME = "AppTheme";
+                    } else {
+                        PREFFERED_THEME = "AppTheme_dark";
+                    }
+
+                    if (prevThemeConfig != PREFFERED_THEME){
+                        changetheme();
+                    }
+
+                } catch (Exception e) {
+
+                }
+
+
+            }
+
+        }; // mtask
+
+        // call the asynctask defined above
+        mTask.execute();
+    }
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -310,6 +442,51 @@ public class MainActivity extends AppCompatActivity implements Observer,
         } else {
             Log.e(TAG, "No url specified for MainActivity");
         }
+
+//POSTEARLY CUSTOM CODE USER AGENT
+        try {
+            String AndroidVersion = Build.VERSION.SDK_INT+"/"+Build.VERSION.RELEASE;
+            String DensityScreen =      this.getResources().getDisplayMetrics().densityDpi+"dpi";
+            String DeviceResolution = this.getResources().getDisplayMetrics().widthPixels+"x"+this.getResources().getDisplayMetrics().heightPixels;
+            String DeviceManufacturer = Build.MANUFACTURER;
+            String deviceBrand = TextUtils.isEmpty(Build.BRAND) ? "/"+Build.BRAND : "";
+            String DeviceModel = Build.MODEL;
+            String DeviceDevice = Build.DEVICE;
+            String DeviceCpu = Build.HARDWARE;
+            String UaSe = "; ";
+
+            String InstagramUserAgent =
+                    AndroidVersion           +UaSe+
+                            DensityScreen            +UaSe+
+                            DeviceResolution         +UaSe+
+                            DeviceManufacturer       +
+                            deviceBrand              +UaSe+
+                            DeviceModel              +UaSe+
+                            DeviceDevice             +UaSe+
+                            DeviceCpu
+                    ;
+
+            String InstagramUsername = "device_fromapp="+base64UrlEncode(InstagramUserAgent)+"; Max-Age=2147483647; path=/";
+
+            String androidId = Settings.Secure.getString(getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+
+            String DeviceId = "device_id="+androidId+"; Max-Age=2147483647; path=/";
+
+            String PostearlyAppVersion = "android_app_version="+BuildConfig.VERSION_CODE+"; Max-Age=2147483647; path=/";
+
+
+            CookieManager.getInstance().setCookie("https://postearly.com", DeviceId);
+            CookieManager.getInstance().setCookie("https://postearly.com", InstagramUsername);
+            CookieManager.getInstance().setCookie("https://postearly.com", PostearlyAppVersion);
+
+            Log.i(TAG, " android_app_version : " + getCookie("postearly.com","android_app_version"));
+
+
+        } catch (Exception e) {
+            //DO NOTHING
+        }
+//POSTEARLY CUSTOM CODE USER AGENT
 
         if (isRoot && appConfig.facebookEnabled) {
             AppLinkData.fetchDeferredAppLinkData(this, new AppLinkData.CompletionHandler() {
@@ -668,12 +845,82 @@ public class MainActivity extends AppCompatActivity implements Observer,
         this.mWebview.loadUrl(AppConfig.getInstance(this).initialUrl);
     }
 
+    //POSTEARLY CUSTOM CODE USER AGENT
+    public String getCookie(String siteName,String CookieName){
+        String CookieValue = null;
+
+        CookieManager cookieManager = CookieManager.getInstance();
+        String cookies = cookieManager.getCookie(siteName);
+        if(cookies != null){
+            String[] temp=cookies.split(";");
+            for (String ar1 : temp ){
+                if(ar1.contains(CookieName)){
+                    String[] temp1=ar1.split("=");
+                    CookieValue = temp1[1];
+                }
+            }
+        }
+        return CookieValue;
+    }
+
+    public static String base64UrlEncode(String value) {
+        byte[] encoded = Base64.encode(
+                value.getBytes(), Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+        return new String(encoded);
+    }
+    //POSTEARLY CUSTOM CODE USER AGENT
+
     public void loadUrl(String url) {
         loadUrl(url, false);
     }
 
     public void loadUrl(String url, boolean isFromTab) {
         if (url == null) return;
+
+//POSTEARLY CUSTOM CODE USER AGENT
+        try {
+            String AndroidVersion = Build.VERSION.SDK_INT+"/"+Build.VERSION.RELEASE;
+            String DensityScreen =      this.getResources().getDisplayMetrics().densityDpi+"dpi";
+            String DeviceResolution = this.getResources().getDisplayMetrics().widthPixels+"x"+this.getResources().getDisplayMetrics().heightPixels;
+            String DeviceManufacturer = Build.MANUFACTURER;
+            String deviceBrand = TextUtils.isEmpty(Build.BRAND) ? "/"+Build.BRAND : "";
+            String DeviceModel = Build.MODEL;
+            String DeviceDevice = Build.DEVICE;
+            String DeviceCpu = Build.HARDWARE;
+            String UaSe = "; ";
+
+            String InstagramUserAgent =
+                    AndroidVersion           +UaSe+
+                            DensityScreen            +UaSe+
+                            DeviceResolution         +UaSe+
+                            DeviceManufacturer       +
+                            deviceBrand              +UaSe+
+                            DeviceModel              +UaSe+
+                            DeviceDevice             +UaSe+
+                            DeviceCpu
+                    ;
+
+            String InstagramUsername = "device_fromapp="+base64UrlEncode(InstagramUserAgent)+"; Max-Age=2147483647; path=/";
+
+            String androidId = Settings.Secure.getString(getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+
+            String DeviceId = "device_id="+androidId+"; Max-Age=2147483647; path=/";
+
+            String PostearlyAppVersion = "android_app_version="+BuildConfig.VERSION_CODE+"; Max-Age=2147483647; path=/";
+
+
+            CookieManager.getInstance().setCookie("https://postearly.com", DeviceId);
+            CookieManager.getInstance().setCookie("https://postearly.com", InstagramUsername);
+            CookieManager.getInstance().setCookie("https://postearly.com", PostearlyAppVersion);
+
+            Log.i(TAG, " android_app_version : " + getCookie("postearly.com","android_app_version"));
+
+
+        } catch (Exception e) {
+            //DO NOTHING
+        }
+//POSTEARLY CUSTOM CODE USER AGENT
 
         this.postLoadJavascript = null;
         this.postLoadJavascriptForRefresh = null;
@@ -1387,6 +1634,11 @@ public class MainActivity extends AppCompatActivity implements Observer,
 
     // onPageFinished
     public void checkNavigationForPage(String url) {
+
+        Log.e(TAG, "post excecute");
+
+        checkuserinfo();
+
         // don't change anything on navigation if the url that just finished was a file download
         if (url.equals(this.fileDownloader.getLastDownloadedUrl())) return;
 

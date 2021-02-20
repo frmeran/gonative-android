@@ -1231,6 +1231,8 @@ public class UrlNavigation {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         protected void onPostExecute(Pair<PrivateKey, X509Certificate[]> result) {
+
+
             if (result != null && result.first != null & result.second != null) {
                 request.proceed(result.first, result.second);
             } else {

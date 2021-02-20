@@ -60,7 +60,7 @@ public class GoNativeApplication extends MultiDexApplication {
                     new OneSignalNotificationHandler(this));
             OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
         }
-
+        
         if (appConfig.facebookEnabled) {
             FacebookSdk.setApplicationId(appConfig.facebookAppId);
         }

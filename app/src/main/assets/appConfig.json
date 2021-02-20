@@ -4,11 +4,9 @@
       "[\\s\\S]+"
     ],
     "replaceStrings": [
-      "Mozilla/5.0 (Linux; Android 9; SM-N960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.93 Mobile Safari/537.36"
+      ""
     ],
-    "forceUserAgent": [
-      "Mozilla/5.0 (Linux; Android 7.1.2; Pixel XL Build/N2G47O) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.83 Mobile Safari/537.36 gonative"
-    ],
+    "forceUserAgent": "Mozilla/5.0 (Linux; Android 10; SM-N970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.181 Mobile Safari/537.36",
     "languages": [],
     "useWKWebView": true,
     "enableWindowOpen": true,
@@ -260,6 +258,8 @@
       "active": true,
       "displayName": "Postearly",
       "appId": "371524190716319"
+    },
+    "facebookEnabled": true
     },
     "oneSignal": {
       "active": true,

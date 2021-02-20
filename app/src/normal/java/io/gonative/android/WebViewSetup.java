@@ -111,7 +111,19 @@ public class WebViewSetup {
 
         webSettings.setSaveFormData(false);
         webSettings.setSavePassword(false);
-        webSettings.setUserAgentString(appConfig.userAgent);
+        String ua = "";
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            ua = appConfig.userAgent;
+        } else {
+            ua = WebSettings.getDefaultUserAgent(context);
+        }
+
+        ua = ua.replaceAll("(?i)( Build)(.*?)\\)", ")");
+        ua = ua.replaceAll("(?i)(Version)(.*?)\\ ", "");
+
+        webSettings.setUserAgentString(ua);
+
         webSettings.setSupportMultipleWindows(appConfig.enableWindowOpen);
         webSettings.setGeolocationEnabled(appConfig.usesGeolocation);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

@@ -34,6 +34,8 @@
 	<string name="starting_download">Starting download</string>
 	<string name="subscriptions_activity_title">Subscriptions</string>
 	<string name="cleared_cache">Cleared cache</string>
+	<string name="facebook_app_id">371524190716319</string>
+
 
 	<!--App Links URL scheme-->
 	<string name="deeplinking">Postearly</string>
