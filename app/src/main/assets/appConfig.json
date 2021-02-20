@@ -109,6 +109,10 @@
           "internal": false
         },
         {
+          "regex": "https?://([-\\w]+\\.)*api\\.twitter\\.com/.*",
+          "internal": true
+        },
+        {
           "regex": "https?://([-\\w]+\\.)*twitter\\.com/.*",
           "internal": false
         },
