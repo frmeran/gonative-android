@@ -6,8 +6,9 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 29
-        applicationId "io.gonative.android"
-        versionCode 1
+        applicationId "com.postearly.android"
+        versionCode 178
+        versionName "17.8"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
@@ -24,22 +25,22 @@ android {
     signingConfigs {
         release {
             storeFile file("../../release.keystore")
-            storePassword "password"
-            keyAlias "release"
-            keyPassword "password"
+            storePassword "@Zerofran23"
+            keyAlias "cert"
+            keyPassword "@Zerofran23"   
         }
         upload {
-            storeFile file("../../upload.keystore")
-            storePassword "password"
-            keyAlias "upload"
-            keyPassword "password"
+            storeFile file("../../release.keystore")
+            storePassword "@Zerofran23"
+            keyAlias "cert"
+            keyPassword "@Zerofran23"
         }
     }
 
     buildTypes {
-        debug {
-	        applicationIdSuffix ".debug"
-        }
+//        debug {
+//	        applicationIdSuffix ".debug"
+//        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'

@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>GoNative</title>
+    <title>Postearly</title>
     <style type="text/css">
         div.container {
         position: relative;
@@ -20,6 +20,9 @@
     if (['ko', 'ko-kr', 'ko-kp'].indexOf(navigator.language.toLowerCase()) > -1) {
         // Korean
         message.innerHTML = '<p>인터넷 연결이 끊겼습니다.<br/>연결하고 다시 시도하시길 바랍니다.</p>';
+    } else if (['es', 'es-es', 'es-mx'].indexOf(navigator.language.toLowerCase()) > -1) {
+        // Spanish
+        message.innerHTML = '<p>Sin conexión a internet.<br/>Conéctate e intenta de nuevo.</p>';
     } else {
         // English
         message.innerHTML = '<p>No internet connection.<br/>Connect and try again.</p>';

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Postearly</string>
+	<string name="action_search">Buscar</string>
+	<string name="action_refresh">Rerescar</string>
+    <string name="action_share">Compartir</string>
+	<string name="shake_to_clear_cache">Sacude el dispositivo para eliminar la caché</string>
+	<string-array name="device_shaken_options">
+		<item>Eliminar caché</item>
+		<item>Cancelar</item>
+	</string-array>
+	<string name="drawer_open">Abrir el selectorr</string>
+	<string name="drawer_close">Cerrar el selector</string>
+	<string name="search_hint">Buscar</string>
+    <string name="form_error">Problema con el envío. Verifica los campos e intenta nuevamente.</string>
+    <string name="download">Descargar</string>
+    <string name="download_canceled">Descarga cancelada</string>
+	<string name="download_channel_name">Descarga de archivos</string>
+	<string name="download_channel_description">Notificaciones para la descarga de archivo</string>
+	<string name="download_in_progress">Descarga en progreso</string>
+	<string name="download_complete">Descarga completada</string>
+	<string name="file_handler_not_found">No se pudo encontrar una aplicación para abrir este archivo.</string>
+	<string name="cannot_open_file_chooser">No se pudo abrir el selector de archivos para manejar este tipo de archivo.</string>
+	<string name="external_storage_explanation">Permite acceso al directorio de subidas.</string>
+	<string name="ssl_error_generic">Error estableciendo una conección SSL</string>
+	<string name="ssl_error_expired">El certificado SSL expiró</string>
+	<string name="ssl_error_cert">Certificado SSl inválido</string>
+    <string name="location_services_not_enabled">Para continuar, enciende los servicios de gps, que son usados por el servicio de localización de Google</string>
+    <string name="ok">OK</string>
+    <string name="no_thanks">No gracias</string>
+	<string name="request_permission_explanation_geolocation">Por favor apruebe los servicios de localización</string>
+	<string name="request_permission_explanation_storage">Por favor apruebe los servicios de almacenamiento para las descargas</string>
+	<string name="starting_download">Iniciando descarga</string>
+	<string name="subscriptions_activity_title">Suscripciones</string>
+	<string name="cleared_cache">Caché eliminada</string>
+</resources>

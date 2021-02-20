@@ -35,21 +35,114 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
+            android:launchMode="singleTask"
             android:name="io.gonative.android.MainActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|screenSize">
-            <!--additional intent filters-->
 
-            <!--example: -->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.VIEW"></action>-->
-                <!--<category android:name="android.intent.category.DEFAULT"></category>-->
-                <!--<category android:name="android.intent.category.BROWSABLE"></category>-->
-                <!--<data android:scheme="http"></data>-->
-                <!--<data android:scheme="https"></data>-->
-                <!--<data android:host="gonative.io"></data>-->
-                <!--<data android:pathPrefix="/"></data>-->
-            <!--</intent-filter>-->
+            <intent-filter
+                android:autoVerify="true"
+                android:label="@string/deeplinking">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+
+                <data android:host="postearly.com" />
+
+                <data android:path=""
+                    android:scheme="https"/>
+
+                <data android:path=""
+                    android:scheme="http"/>
+
+                <data android:path="/"
+                    android:scheme="https" />
+
+                <data android:path="/"
+                    android:scheme="http" />
+
+                <data android:pathPattern="/login.*" />
+
+
+
+                <data android:pathPattern="/signup.*" />
+
+
+
+                <data android:pathPattern="/logout.*" />
+
+
+
+                <data android:pathPattern="/recovery.*" />
+
+
+
+                <data android:pathPattern="/post.*" />
+
+
+
+                <data android:pathPattern="/accounts.*" />
+
+
+
+                <data android:pathPattern="/captions.*" />
+
+
+
+                <data android:pathPattern="/settings.*" />
+
+
+
+                <data android:pathPattern="/packages.*" />
+
+
+
+                <data android:pathPattern="/users.*" />
+
+
+
+                <data android:pathPattern="/profile.*" />
+
+
+
+                <data android:pathPattern="/calendar.*" />
+
+
+
+                <data android:pathPattern="/proxies.*" />
+
+
+
+                <data android:pathPattern="/statistics.*" />
+
+
+
+                <data android:pathPattern="/expired.*" />
+
+
+
+                <data android:pathPattern="/renew.*" />
+
+
+
+                <data android:pathPattern="/checkout.*" />
+
+
+
+                <data android:pathPattern="/plugins.*" />
+
+
+
+                <data android:pathPattern="/verification.*" />
+                <data android:pathPattern="/e.*" />
+
+
+
+            </intent-filter>
         </activity>
 
         <!-- For file sharing without having to use external permissions. -->
