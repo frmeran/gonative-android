@@ -263,8 +263,7 @@
       "displayName": "Postearly",
       "appId": "371524190716319"
     },
-    "facebookEnabled": true
-    },
+    "facebookEnabled": true,
     "oneSignal": {
       "active": true,
       "notificationExtension": true,
