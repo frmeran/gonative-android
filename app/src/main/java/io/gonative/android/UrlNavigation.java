@@ -40,6 +40,7 @@ import android.webkit.CookieSyncManager;
 import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
@@ -263,6 +264,7 @@ public class UrlNavigation {
                 if ("/clearCache".equals(uri.getPath())) {
                     Log.d(TAG, "Clearing webview cache");
                     mainActivity.clearWebviewCache();
+                    mainActivity.clearAppData();
                 }
                 return true;
             }

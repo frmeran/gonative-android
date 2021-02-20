@@ -159,7 +159,7 @@
         </provider>
 
         <!-- Disable default OneSignal handling -->
-        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
+<!--        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />-->
 
         <activity
             android:name=".SplashActivity"

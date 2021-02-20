@@ -3,6 +3,7 @@ package io.gonative.android;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -180,7 +181,21 @@ public class MainActivity extends AppCompatActivity implements Observer,
     private PhoneStateListener phoneStateListener;
     private SignalStrength latestSignalStrength;
 
+    public void clearAppData() {
+        try {
+            // clearing app data
+            if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
+                ((ActivityManager)getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData(); // note: it has a return value!
+            } else {
+                String packageName = getApplicationContext().getPackageName();
+                Runtime runtime = Runtime.getRuntime();
+                runtime.exec("pm clear "+packageName);
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private static String readAll(Reader rd) throws IOException {
@@ -1634,8 +1649,6 @@ public class MainActivity extends AppCompatActivity implements Observer,
 
     // onPageFinished
     public void checkNavigationForPage(String url) {
-
-        Log.e(TAG, "post excecute");
 
         checkuserinfo();
 
