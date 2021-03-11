@@ -7,8 +7,8 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         applicationId "com.postearly.android"
-        versionCode 203
-        versionName "20.0.3"
+        versionCode 204
+        versionName "20.0.4"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
