@@ -31,7 +31,8 @@
         android:logo="@drawable/ic_actionbar"
         android:theme="@style/GoNativeTheme.WithActionBar"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
