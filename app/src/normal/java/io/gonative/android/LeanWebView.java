@@ -7,8 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
@@ -30,6 +33,9 @@ import com.facebook.login.LoginResult;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Pass calls WebViewClient.shouldOverrideUrlLoading when loadUrl, reload, or goBack are called.
@@ -182,7 +188,28 @@ public class LeanWebView extends WebView implements GoNativeWebviewInterface {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             loadUrlDirect("javascript:" + js);
         } else {
-            evaluateJavascript(js, null);
+            evaluateJavascript(js, new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    JsonReader reader = new JsonReader(new StringReader(value));
+                    // Must set lenient to parse single values
+                    reader.setLenient(true);
+                    try {
+                        if(reader.peek() != JsonToken.NULL) {
+                            if(reader.peek() == JsonToken.STRING) {
+                                String result = reader.nextString();
+                                if(result != null) {
+                                    JsResultBridge.jsResult = result;
+                                }
+                            } else {
+                                JsResultBridge.jsResult = value;
+                            }
+                        }
+                    } catch (IOException e) {
+                        JsResultBridge.jsResult = "GoNativeGetJsResultsError";
+                    }
+                }
+            });
         }
     }
 
