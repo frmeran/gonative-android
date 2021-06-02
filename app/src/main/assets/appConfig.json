@@ -261,7 +261,8 @@
     "facebook": {
       "active": true,
       "displayName": "Postearly",
-      "appId": "371524190716319"
+      "appId": "371524190716319",
+      "autoLogging": true
     },
     "facebookEnabled": true,
     "oneSignal": {

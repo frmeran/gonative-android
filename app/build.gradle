@@ -1,4 +1,17 @@
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.application'
+
+ext {
+    fbAppId = ""
+}
+
+task parseAppConfig {
+    def jsonFile = file('src/main/assets/appConfig.json')
+    def parsedJson = new JsonSlurper().parseText(jsonFile.text)
+    fbAppId = parsedJson.services.facebook.appId
+}
+build.dependsOn parseAppConfig
 
 android {
     compileSdkVersion 29
@@ -14,7 +27,8 @@ android {
 
         manifestPlaceholders = [manifestApplicationId: "${applicationId}",
                                 onesignal_app_id: "",
-                                onesignal_google_project_number: ""]
+                                onesignal_google_project_number: "",
+                                facebook_app_id: fbAppId ]
     }
 
     compileOptions {
