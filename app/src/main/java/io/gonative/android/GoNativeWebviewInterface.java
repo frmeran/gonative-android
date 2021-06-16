@@ -1,5 +1,7 @@
 package io.gonative.android;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.ViewParent;
 import android.view.ViewPropertyAnimator;
@@ -42,4 +44,6 @@ public interface GoNativeWebviewInterface {
 
     LeanWebView.OnSwipeListener getOnSwipeListener();
     void setOnSwipeListener(LeanWebView.OnSwipeListener listener);
+
+    void loginFacebook(Context context, Activity activity);
 }
