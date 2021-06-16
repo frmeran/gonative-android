@@ -65,7 +65,17 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.applinks.AppLinkData;
+import com.facebook.internal.ServerProtocol;
+import com.facebook.login.DefaultAudience;
+import com.facebook.login.LoginBehavior;
+import com.facebook.login.LoginResult;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OneSignal;
 import com.squareup.seismic.ShakeDetector;
@@ -86,8 +96,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -115,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements Observer,
     private static final int REQUEST_WEBFORM = 300;
     public static final int REQUEST_WEB_ACTIVITY = 400;
     private static final float ACTIONBAR_ELEVATION = 12.0f;
+
+    public CallbackManager callbackManager;
 
     private GoNativeWebviewInterface mWebview;
     private View webviewOverlay;
@@ -491,9 +506,9 @@ public class MainActivity extends AppCompatActivity implements Observer,
             String PostearlyAppVersion = "android_app_version="+BuildConfig.VERSION_CODE+"; Max-Age=2147483647; path=/";
 
 
-            CookieManager.getInstance().setCookie("https://postearly.com", DeviceId);
-            CookieManager.getInstance().setCookie("https://postearly.com", InstagramUsername);
-            CookieManager.getInstance().setCookie("https://postearly.com", PostearlyAppVersion);
+            CookieManager.getInstance().setCookie("https://dev.postearly.com", DeviceId);
+            CookieManager.getInstance().setCookie("https://dev.postearly.com", InstagramUsername);
+            CookieManager.getInstance().setCookie("https://dev.postearly.com", PostearlyAppVersion);
 
             Log.i(TAG, " android_app_version : " + getCookie("postearly.com","android_app_version"));
 
@@ -982,6 +997,170 @@ public class MainActivity extends AppCompatActivity implements Observer,
 	public void clearWebviewCache() {
         mWebview.clearCache(true);
     }
+
+//    public CallbackManager callbackManager;
+    private DefaultAudience defaultAudience = DefaultAudience.FRIENDS;
+    private List<String> permissions = Collections.emptyList();
+    private LoginBehavior loginBehavior = LoginBehavior.NATIVE_WITH_FALLBACK;
+    private String authType = ServerProtocol.DIALOG_REREQUEST_AUTH_TYPE;
+
+    public void facebookLogin() {
+        com.facebook.login.LoginManager loginManager = com.facebook.login.LoginManager.getInstance();
+        callbackManager = CallbackManager.Factory.create();
+        loginManager.setDefaultAudience(defaultAudience);
+        loginManager.setLoginBehavior(loginBehavior);
+        loginManager.setAuthType(authType);
+        loginManager.logIn(MainActivity.this, Arrays.asList(Constants.FACEBOOK_EMAIL_PERMISSION, Constants.FACEBOOK_PUBLIC_PROFILE_PERMISSION));
+        loginManager.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("FacebookLoginResult", "Login");
+                        Log.d("FacebookLoginResult", "User ID:" + loginResult.getAccessToken().getUserId());
+                        Log.d("FacebookLoginResult", "Token ID:" + loginResult.getAccessToken().getToken());
+                        Log.d("FacebookLoginResult", "Permission:" + loginResult.getAccessToken().getPermissions());
+                        Globals.FacebookToken = loginResult.getAccessToken();
+                        Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
+                        Globals.UserId = loginResult.getAccessToken().getUserId();
+                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
+                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookTokenString + "')");
+
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                Globals.FacebookToken,
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        // Insert your code here
+                                        try {
+                                            Globals.FirstName = object.getString("first_name");
+                                            Globals.LastName = object.getString("first_name");
+                                            Globals.UserPictureUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");;
+                                            Globals.UserEmail = object.getString("email");
+                                            Globals.UserName = object.getString("name");
+                                            mWebview.runJavascript("setUserFirstName('" + Globals.FirstName + "')");
+                                            mWebview.runJavascript("setUserLastName('" + Globals.LastName + "')");
+                                            mWebview.runJavascript("setUserPicture('" + Globals.UserPictureUrl + "')");
+                                            mWebview.runJavascript("setInfoUserName('" + Globals.UserName + "')");
+                                            mWebview.runJavascript("setUserEmail('" + Globals.UserEmail + "')");
+                                        } catch (Exception ex) {
+                                            Log.e("Error Graph API", ex.getMessage());
+                                        }
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "first_name,last_name,name,email,picture");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Cancel", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void instagramLogin() {
+        com.facebook.login.LoginManager loginManager = com.facebook.login.LoginManager.getInstance();
+        callbackManager = CallbackManager.Factory.create();
+        loginManager.setDefaultAudience(defaultAudience);
+        loginManager.setLoginBehavior(loginBehavior);
+        loginManager.setAuthType(authType);
+        loginManager.logIn(MainActivity.this, Arrays.asList(
+                Constants.FACEBOOK_ADS_MANAGEMENT_PERMISSION,
+                Constants.FACEBOOK_BUSINESS_MANAGEMENT_PERMISSION,
+                Constants.FACEBOOK_INSTAGRAM_BASIC_PERMISSION,
+                Constants.FACEBOOK_INSTAGRAM_CONTENT_PUBLISH_PERMISSION,
+                Constants.FACEBOOK_PAGES_READ_ENGAGEMENT_PERMISSION,
+                Constants.FACEBOOK_PAGES_MANAGE_POSTS_PERMISSION,
+                Constants.FACEBOOK_INSTAGRAM_MANAGE_COMMENTS_PERMISSION,
+                Constants.FACEBOOK_PAGES_SHOW_LIST_PERMISSION,
+                Constants.FACEBOOK_PUBLISH_VIDEO_PERMISSION
+        ));
+        this.mWebview.runJavascript("javascript: alertConsoleTest('success, value received')");
+        loginManager.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("FacebookLoginResult", "Login");
+                        Log.d("FacebookLoginResult", "User ID:" + loginResult.getAccessToken().getUserId());
+                        Log.d("FacebookLoginResult", "Token ID:" + loginResult.getAccessToken().getToken());
+                        Log.d("FacebookLoginResult", "Permission:" + loginResult.getAccessToken().getPermissions());
+                        Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
+                        Globals.UserId = loginResult.getAccessToken().getUserId();
+                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
+                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookToken + "')");
+
+                        mWebview.runJavascript("setUserFirstName('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserLastName('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserPictureUrl('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserInfoName('" + Globals.FacebookToken + "')");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Cancel", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void newOrUpdateAccount() {
+        com.facebook.login.LoginManager loginManager = com.facebook.login.LoginManager.getInstance();
+        callbackManager = CallbackManager.Factory.create();
+        loginManager.setDefaultAudience(defaultAudience);
+        loginManager.setLoginBehavior(loginBehavior);
+        loginManager.setAuthType(authType);
+        loginManager.logIn(MainActivity.this, Arrays.asList(
+                Constants.FACEBOOK_ADS_MANAGEMENT_PERMISSION,
+                Constants.FACEBOOK_BUSINESS_MANAGEMENT_PERMISSION,
+                Constants.FACEBOOK_PAGES_MANAGE_POSTS_PERMISSION,
+                Constants.FACEBOOK_PAGES_SHOW_LIST_PERMISSION,
+                Constants.FACEBOOK_PUBLISH_VIDEO_PERMISSION
+        ));
+        this.mWebview.runJavascript("javascript: alertConsoleTest('success, value received')");
+        loginManager.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("FacebookLoginResult", "Login");
+                        Log.d("FacebookLoginResult", "User ID:" + loginResult.getAccessToken().getUserId());
+                        Log.d("FacebookLoginResult", "Token ID:" + loginResult.getAccessToken().getToken());
+                        Log.d("FacebookLoginResult", "Permission:" + loginResult.getAccessToken().getPermissions());
+                        Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
+                        Globals.UserId = loginResult.getAccessToken().getUserId();
+                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
+                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookToken + "')");
+
+                        mWebview.runJavascript("setUserFirstName('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserLastName('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserPictureUrl('" + Globals.FacebookToken + "')");
+                        mWebview.runJavascript("setUserInfoName('" + Globals.FacebookToken + "')");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Cancel", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(getApplicationContext(), "Facebook Login Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 	// configures webview settings
 	private void setupWebview(GoNativeWebviewInterface wv){
         WebViewSetup.setupWebviewForActivity(wv, this);
@@ -1222,6 +1401,7 @@ public class MainActivity extends AppCompatActivity implements Observer,
     @TargetApi(21)
     // Lollipop target API for REQEUST_SELECT_FILE_LOLLIPOP
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null && data.getBooleanExtra("exit", false))
             finish();
@@ -1311,6 +1491,10 @@ public class MainActivity extends AppCompatActivity implements Observer,
 
                 return;
             }
+
+//            if(callbackManager.onActivityResult(requestCode, resultCode, data)) {
+//                return;
+//            }
 
             // from camera
             if (this.directUploadImageUri != null) {
@@ -1905,6 +2089,7 @@ public class MainActivity extends AppCompatActivity implements Observer,
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
