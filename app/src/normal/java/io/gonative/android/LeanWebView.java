@@ -1,9 +1,12 @@
 package io.gonative.android;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.webkit.WebBackForwardList;
@@ -11,6 +14,24 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.internal.ServerProtocol;
+import com.facebook.login.DefaultAudience;
+import com.facebook.login.LoginBehavior;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import io.gonative.android.activities.LoginActivity;
 
 /**
  * Pass calls WebViewClient.shouldOverrideUrlLoading when loadUrl, reload, or goBack are called.
@@ -200,5 +221,10 @@ public class LeanWebView extends WebView implements GoNativeWebviewInterface {
 
     public void setOnSwipeListener(OnSwipeListener onSwipeListener) {
         this.onSwipeListener = onSwipeListener;
+    }
+
+    @Override
+    public void loginFacebook(Context context, Activity activity) {
+        activity.startActivity(new Intent(context, LoginActivity.class));
     }
 }
