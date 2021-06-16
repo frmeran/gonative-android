@@ -268,6 +268,21 @@ public class UrlNavigation {
                     mainActivity.clearWebviewCache();
                     mainActivity.clearAppData();
                 }
+            }
+
+            if("facebook_login".equals(uri.getHost())) {
+                if ("/facebookLogin".equals(uri.getPath())) {
+                    Log.d(TAG, "Facebook Login Attempt");
+                    mainActivity.facebookLogin();
+                }
+                if ("/instagramLogin".equals(uri.getPath())) {
+                    Log.d(TAG, "Facebook Login Attempt");
+                    mainActivity.instagramLogin();
+                }
+                if ("/newOrUpdateAccountLogin".equals(uri.getPath())) {
+                    Log.d(TAG, "Facebook Login Attempt");
+                    mainActivity.newOrUpdateAccount();
+                }
                 return true;
             }
 
