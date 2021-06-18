@@ -31,8 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import io.gonative.android.activities.LoginActivity;
-
 /**
  * Pass calls WebViewClient.shouldOverrideUrlLoading when loadUrl, reload, or goBack are called.
  */
@@ -225,6 +223,5 @@ public class LeanWebView extends WebView implements GoNativeWebviewInterface {
 
     @Override
     public void loginFacebook(Context context, Activity activity) {
-        activity.startActivity(new Intent(context, LoginActivity.class));
     }
 }
