@@ -7,8 +7,8 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         applicationId "com.postearly.android"
-        versionCode 206
-        versionName "20.0.6"
+        versionCode 208
+        versionName "20.0.8"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
@@ -27,7 +27,7 @@ android {
             storeFile file("../../release.keystore")
             storePassword "@Zerofran23"
             keyAlias "cert"
-            keyPassword "@Zerofran23"   
+            keyPassword "@Zerofran23"
         }
         upload {
             storeFile file("../../release.keystore")
@@ -69,8 +69,8 @@ dependencies {
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
     implementation "com.mikepenz:iconics-core:3.2.5"
     implementation 'com.mikepenz:fontawesome-typeface:5.3.1.1@aar'
-    implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
-    implementation 'com.facebook.android:facebook-login:5.0.0'
+    implementation 'com.facebook.android:facebook-android-sdk:11.0.0'
+    implementation 'com.facebook.android:facebook-login:11.0.0'
     implementation 'com.squareup:seismic:1.0.2'
     /**** end all apps ****/
 

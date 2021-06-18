@@ -35,6 +35,8 @@
     <string name="subscriptions_activity_title">Subscriptions</string>
     <string name="cleared_cache">Cleared cache</string>
     <string name="facebook_app_id">371524190716319</string>
+    <string name="facebook_client_token">0c25c571ff53ad00b2b4e921c92c38aa</string>
+
 
 
     <!--App Links URL scheme-->
