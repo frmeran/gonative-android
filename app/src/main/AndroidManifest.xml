@@ -29,7 +29,7 @@
         android:logo="@drawable/ic_actionbar"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/GoNativeTheme.WithActionBar"
         android:usesCleartextTraffic="true">
         <activity android:name=".activities.LoginActivity"></activity>
 
