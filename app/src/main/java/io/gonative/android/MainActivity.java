@@ -1022,8 +1022,8 @@ public class MainActivity extends AppCompatActivity implements Observer,
                         Globals.FacebookToken = loginResult.getAccessToken();
                         Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
                         Globals.UserId = loginResult.getAccessToken().getUserId();
-                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
-                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookTokenString + "')");
+//                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
+//                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookTokenString + "')");
 
                         GraphRequest request = GraphRequest.newMeRequest(
                                 Globals.FacebookToken,
@@ -1037,11 +1037,20 @@ public class MainActivity extends AppCompatActivity implements Observer,
                                             Globals.UserPictureUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");;
                                             Globals.UserEmail = object.getString("email");
                                             Globals.UserName = object.getString("name");
-                                            mWebview.runJavascript("setUserFirstName('" + Globals.FirstName + "')");
-                                            mWebview.runJavascript("setUserLastName('" + Globals.LastName + "')");
-                                            mWebview.runJavascript("setUserPicture('" + Globals.UserPictureUrl + "')");
-                                            mWebview.runJavascript("setInfoUserName('" + Globals.UserName + "')");
-                                            mWebview.runJavascript("setUserEmail('" + Globals.UserEmail + "')");
+//                                            mWebview.runJavascript("setUserFirstName('" + Globals.FirstName + "')");
+//                                            mWebview.runJavascript("setUserLastName('" + Globals.LastName + "')");
+//                                            mWebview.runJavascript("setUserPicture('" + Globals.UserPictureUrl + "')");
+//                                            mWebview.runJavascript("setInfoUserName('" + Globals.UserName + "')");
+//                                            mWebview.runJavascript("setUserEmail('" + Globals.UserEmail + "')");
+                                            String jsFunction = "fbLoginNative('"
+                                                    + Globals.FirstName + "', '"
+                                                    + Globals.LastName + "', '"
+                                                    + Globals.UserEmail + "', '"
+                                                    + Globals.UserPictureUrl + "', '"
+                                                    + Globals.UserName + "', '"
+                                                    + Globals.FacebookTokenString + "', '"
+                                                    + Globals.UserId + "');";
+                                            mWebview.runJavascript(jsFunction);
                                         } catch (Exception ex) {
                                             Log.e("Error Graph API", ex.getMessage());
                                         }
@@ -1084,7 +1093,6 @@ public class MainActivity extends AppCompatActivity implements Observer,
                 Constants.FACEBOOK_PAGES_SHOW_LIST_PERMISSION,
                 Constants.FACEBOOK_PUBLISH_VIDEO_PERMISSION
         ));
-        this.mWebview.runJavascript("javascript: alertConsoleTest('success, value received')");
         loginManager.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -1093,15 +1101,34 @@ public class MainActivity extends AppCompatActivity implements Observer,
                         Log.d("FacebookLoginResult", "User ID:" + loginResult.getAccessToken().getUserId());
                         Log.d("FacebookLoginResult", "Token ID:" + loginResult.getAccessToken().getToken());
                         Log.d("FacebookLoginResult", "Permission:" + loginResult.getAccessToken().getPermissions());
+                        Globals.FacebookToken = loginResult.getAccessToken();
                         Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
                         Globals.UserId = loginResult.getAccessToken().getUserId();
-                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
-                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookToken + "')");
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                Globals.FacebookToken,
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        // Insert your code here
+                                        try {
+                                            Globals.FirstName = object.getString("first_name");
+                                            Globals.LastName = object.getString("last_name");
+                                            Globals.UserPictureUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                            Globals.UserEmail = object.getString("email");
+                                            Globals.UserName = object.getString("name");
+                                            String jsFunction = "FacebookInstagramLogin('" + Globals.FacebookTokenString + "', '"
+                                                    + Globals.UserId + "');";
+                                            mWebview.runJavascript(jsFunction);
+                                        } catch (Exception ex) {
+                                            Log.e("Error Graph API", ex.getMessage());
+                                        }
+                                    }
+                                });
 
-                        mWebview.runJavascript("setUserFirstName('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserLastName('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserPictureUrl('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserInfoName('" + Globals.FacebookToken + "')");
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "first_name,last_name,name,email,picture");
+                        request.setParameters(parameters);
+                        request.executeAsync();
                     }
 
                     @Override
@@ -1129,7 +1156,6 @@ public class MainActivity extends AppCompatActivity implements Observer,
                 Constants.FACEBOOK_PAGES_SHOW_LIST_PERMISSION,
                 Constants.FACEBOOK_PUBLISH_VIDEO_PERMISSION
         ));
-        this.mWebview.runJavascript("javascript: alertConsoleTest('success, value received')");
         loginManager.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -1140,13 +1166,35 @@ public class MainActivity extends AppCompatActivity implements Observer,
                         Log.d("FacebookLoginResult", "Permission:" + loginResult.getAccessToken().getPermissions());
                         Globals.FacebookTokenString = loginResult.getAccessToken().getToken();
                         Globals.UserId = loginResult.getAccessToken().getUserId();
-                        mWebview.runJavascript("setGlobalUserId('" + Globals.UserId + "')");
-                        mWebview.runJavascript("setGlobalFacebookToken('" + Globals.FacebookToken + "')");
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                Globals.FacebookToken,
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        // Insert your code here
+                                        try {
+                                            Globals.FirstName = object.getString("first_name");
+                                            Globals.LastName = object.getString("last_name");
+                                            Globals.UserPictureUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                            Globals.UserEmail = object.getString("email");
+                                            Globals.UserName = object.getString("name");
+                                            String jsFunction = "FacebookLoginOff('"
+                                                    + Globals.FirstName + "', '"
+                                                    + Globals.LastName + "', '"
+                                                    + Globals.UserPictureUrl + "', '"
+                                                    + Globals.FacebookTokenString + "', '"
+                                                    + Globals.UserId + "');";
+                                            mWebview.runJavascript(jsFunction);
+                                        } catch (Exception ex) {
+                                            Log.e("Error Graph API", ex.getMessage());
+                                        }
+                                    }
+                                });
 
-                        mWebview.runJavascript("setUserFirstName('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserLastName('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserPictureUrl('" + Globals.FacebookToken + "')");
-                        mWebview.runJavascript("setUserInfoName('" + Globals.FacebookToken + "')");
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "first_name,last_name,name,email,picture");
+                        request.setParameters(parameters);
+                        request.executeAsync();
                     }
 
                     @Override
