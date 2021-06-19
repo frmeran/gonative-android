@@ -296,18 +296,17 @@ public class UrlNavigation {
             }
 
             if("facebook_login".equals(uri.getHost())) {
-                if ("/facebookLogin".equals(uri.getPath())) {
-                    Log.d(TAG, "Facebook Login Attempt");
-                    mainActivity.facebookLogin();
+
+                Log.d(TAG, "Facebook Login Attempt");
+
+                Map<String, String> FacebookParams = new HashMap<String, String>();
+                for(String parameterName : uri.getQueryParameterNames()) {
+                    String parameter = uri.getQueryParameter(parameterName);
+                    FacebookParams.put(parameterName, parameter);
                 }
-                if ("/instagramLogin".equals(uri.getPath())) {
-                    Log.d(TAG, "Facebook Login Attempt");
-                    mainActivity.instagramLogin();
-                }
-                if ("/newOrUpdateAccountLogin".equals(uri.getPath())) {
-                    Log.d(TAG, "Facebook Login Attempt");
-                    mainActivity.newOrUpdateAccount();
-                }
+                
+                mainActivity.facebookLogin(FacebookParams);
+                
                 return true;
             }
 

@@ -12,7 +12,7 @@
     "enableWindowOpen": true,
     "useCrosswalkWebView": false,
     "forceScreenOrientation": null,
-    "initialUrl": "https://dev.postearly.com/post?AD=ANDROID",
+    "initialUrl": "https://postearly.com/post?AD=ANDROID",
     "appName": "Postearly",
     "publicKey": "xprbxb",
     "deviceRegKey": "6qn5rc32axz7dxbbtng9zf2kmw",
