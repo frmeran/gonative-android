@@ -276,7 +276,8 @@ public class MainActivity extends AppCompatActivity implements Observer,
             setDarkTheme();
         }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 getWindow().setStatusBarColor(Color.BLACK);
             }
 
