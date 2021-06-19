@@ -276,9 +276,10 @@ public class MainActivity extends AppCompatActivity implements Observer,
             setDarkTheme();
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            getWindow().setStatusBarColor(Color.BLACK);
-        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(Color.BLACK);
+            }
+
     }
 
     @SuppressLint("StaticFieldLeak")
