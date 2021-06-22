@@ -1377,7 +1377,13 @@ public class MainActivity extends AppCompatActivity implements Observer,
     @TargetApi(21)
     // Lollipop target API for REQEUST_SELECT_FILE_LOLLIPOP
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+       if (null == callbackManager) {
+           //do stuff
+       } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+       }
+
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null && data.getBooleanExtra("exit", false))
             finish();
